@@ -1,67 +1,81 @@
-import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const String _title = 'Flutter Code Sample';
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
+    return const MaterialApp(
+      title: _title,
+      home: MyStatefulWidget(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final AgoraClient client = AgoraClient(
-    agoraConnectionData: AgoraConnectionData(
-      appId: "457e3f501bba48279f5c31ac8a5b5f67",
-      channelName: "test",
-    ),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    initAgora();
-  }
-
-  void initAgora() async {
-    await client.initialize();
-  }
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  int acceptedData = 0;
+  List<int> list = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            AgoraVideoViewer(client: client),
-            AgoraVideoButtons(client: client),
-          ],
-        ),
+      appBar: AppBar(title: Text('Products')),
+      body: ListView.builder(itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Draggable<int>(
+            data: 1,
+            feedback: Container(
+              height: 100.0,
+              color: Colors.lightGreenAccent,
+              child: Center(
+                child: Text(
+                  'Product item : $index ',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      decoration: TextDecoration.none,
+                      color: Colors.black),
+                ),
+              ),
+            ),
+            childWhenDragging: const SizedBox.shrink(),
+            child: Container(
+              height: 100.0,
+              width: 100.0,
+              color: Colors.lightGreenAccent,
+              child: Center(
+                child: Text('Product item : $index '),
+              ),
+            ),
+          ),
+        );
+      }),
+      floatingActionButton: DragTarget<int>(
+        builder: (BuildContext context, List<dynamic> accepted,
+            List<dynamic> rejected) {
+          return Container(
+            margin: EdgeInsets.all(32),
+            width: 100,
+            height: 100,
+            color: Colors.red,
+            child: Center(child: Text("C: $acceptedData")),
+          );
+        },
+        onAccept: (int data) {
+          acceptedData += data;
+          setState(() {});
+        },
       ),
     );
   }
