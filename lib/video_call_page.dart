@@ -42,6 +42,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
         child: Stack(
           children: [
             AgoraVideoViewer(
+              showNumberOfUsers: true,
               client: client,
               layoutType: Layout.floating,
             ),
